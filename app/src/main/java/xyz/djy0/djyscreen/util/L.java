@@ -9,4 +9,8 @@ public class L {
   public static void d(String tag, String message) {
     System.out.println(tag + "  : " + message);
   }
+
+  public static void d(String tag, String message, Throwable other) {
+    System.out.println(tag + "  : " + message + "  " + other.toString());
+  }
 }

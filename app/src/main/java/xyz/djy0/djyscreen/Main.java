@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.util.Hashtable;
 import xyz.djy0.djyscreen.util.CommandLineArgs;
 import xyz.djy0.djyscreen.util.L;
+import xyz.djy0.djyscreen.util.ServiceLooper;
 import xyz.djy0.djyscreen.util.SystemServiceUtil;
 
 /**
@@ -30,8 +31,6 @@ public class Main {
   private static AsyncServer server;
   private static String commandLinePassword;
 
-  static Looper looper;
-
   static {
     Main.resolution = 0.0;
     Main.server = new AsyncServer();
@@ -39,43 +38,11 @@ public class Main {
 
   public static void main(String[] array) {
     try {
-
-      L.d(TAG, "launch main");
-
-      final IPowerManager powerManager = SystemServiceUtil.getPowerManager();
-      final IWindowManager windowManager = SystemServiceUtil.getWindowManager();
-
-      AsyncHttpServer httpServer = new AsyncHttpServer() {
-        protected boolean onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-          return super.onRequest(request, response);
-        }
-      };
-
-      Looper.prepare();
-      looper = Looper.myLooper();
-
-      httpServer.get("/screenshot.jpg", new HttpServerRequestCallback() {
-        @Override
-        public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-          try {
-            L.d(TAG, "start request");
-            Bitmap bitmap = ScreenShotFb.screenshot(windowManager);
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bout);
-            bout.flush();
-            response.send("image/jpeg", bout.toByteArray());
-            return;
-          } catch (Exception e) {
-            response.code(500);
-            response.send(e.toString());
-            return;
-          }
-        }
-      });
+      L.d(TAG, "launch main 53516");
+      AsyncHttpServer httpServer = new AsyncHttpServer();
+      ServiceLooper.prepare();
+      WebServices.registerAllServices(httpServer);
       httpServer.listen(server, 53516);
-      L.d(TAG, powerManager.toString());
-      L.d(TAG, windowManager.toString());
-      L.d(TAG, httpServer.toString());
       Looper.loop();
     } catch (Exception e) {
       L.d(TAG, e.toString());

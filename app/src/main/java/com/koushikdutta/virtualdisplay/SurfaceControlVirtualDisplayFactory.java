@@ -12,6 +12,7 @@ import android.view.IRotationWatcher;
 import android.view.IWindowManager;
 import android.view.Surface;
 import java.lang.reflect.Method;
+import xyz.djy0.djyscreen.ClientConfig;
 import xyz.djy0.djyscreen.util.ReflectionUtils;
 import xyz.djy0.djyscreen.util.SystemServiceUtil;
 
@@ -58,8 +59,27 @@ public class SurfaceControlVirtualDisplayFactory implements VirtualDisplayFactor
     return point;
   }
 
+  public static Point getEncodeSize() {
+    final Point currentDisplaySize = SurfaceControlVirtualDisplayFactory.getCurrentDisplaySize();
+    if (ClientConfig.resolution != 0.0) {
+      currentDisplaySize.x *= (int)ClientConfig.resolution;
+      currentDisplaySize.y *= (int)ClientConfig.resolution;
+    }
+    else {
+      if (currentDisplaySize.x >= 1280 || currentDisplaySize.y >= 1280) {
+        currentDisplaySize.x /= 2;
+        currentDisplaySize.y /= 2;
+      }
+      while (currentDisplaySize.x > 1280 || currentDisplaySize.y > 1280) {
+        currentDisplaySize.x /= 2;
+        currentDisplaySize.y /= 2;
+      }
+    }
+    return currentDisplaySize;
+  }
+
   @Override
-  public VirtualDisplay createVirtualDisplay(final String s, final int n, final int n2, final int n3, final int n4,
+  public VirtualDisplay createVirtualDisplay(final String s, final int width, final int height, final int n3, final int n4,
       final Surface surface, final Handler handler) {
     try {
       final Class<?> forName = Class.forName("android.view.SurfaceControl");
@@ -73,7 +93,7 @@ public class SurfaceControlVirtualDisplayFactory implements VirtualDisplayFactor
       final Method declaredMethod5 = forName.getDeclaredMethod("closeTransaction", (Class<?>[]) new Class[0]);
       final Method declaredMethod6 =
           Class.forName("android.os.ServiceManager").getDeclaredMethod("getService", String.class);
-      this.displayRect = new Rect(0, 0, n, n2);
+      this.displayRect = new Rect(0, 0, width, height);
       final Rect rect = new Rect(0, 0, this.displaySize.x, this.displaySize.y);
       declaredMethod4.invoke(null, new Object[0]);
       declaredMethod.invoke(null, binder, surface);

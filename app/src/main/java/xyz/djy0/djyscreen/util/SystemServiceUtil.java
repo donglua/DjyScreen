@@ -1,6 +1,7 @@
 package xyz.djy0.djyscreen.util;
 
 import android.hardware.display.IDisplayManager;
+import android.hardware.input.InputManager;
 import android.os.IBinder;
 import android.os.IPowerManager;
 import android.view.DisplayInfo;
@@ -34,5 +35,9 @@ public class SystemServiceUtil {
     final DisplayInfo displayInfo =
         IDisplayManager.Stub.asInterface((IBinder) declaredMethod.invoke(null, "display")).getDisplayInfo(0);
     return displayInfo;
+  }
+
+  public static InputManager getInputManager() {
+    return (InputManager) ReflectionUtils.invokeMethod(InputManager.class, "getInstance", null, null);
   }
 }

@@ -7,13 +7,14 @@ import android.os.Build;
 import android.view.IWindowManager;
 import com.koushikdutta.virtualdisplay.SurfaceControlVirtualDisplayFactory;
 import xyz.djy0.djyscreen.util.ReflectionUtils;
+import xyz.djy0.djyscreen.util.SystemServiceUtil;
 
 /**
  * @author wuwen E-mail: wuwen@tigerbrokers.com
  * @version 创建时间: 2016/10/14 下午4:11
  */
 public class ScreenShotFb {
-  public static Bitmap screenshot(final IWindowManager windowManager) throws Exception {
+  public static Bitmap screenshot() throws Exception {
     final Point currentDisplaySize = SurfaceControlVirtualDisplayFactory.getCurrentDisplaySize(false);
     String s;
     if (Build.VERSION.SDK_INT <= 17) {
@@ -24,6 +25,7 @@ public class ScreenShotFb {
     Class[] classes = { Integer.TYPE, Integer.TYPE };
     Object[] objects = { currentDisplaySize.x, currentDisplaySize.y };
     Bitmap bitmap = (Bitmap) ReflectionUtils.invokeMethod(s, "screenshot", classes, objects);
+    final IWindowManager windowManager = SystemServiceUtil.getWindowManager();
     final int rotation = windowManager.getRotation();
     if (rotation != 0) {
       final Matrix matrix = new Matrix();
